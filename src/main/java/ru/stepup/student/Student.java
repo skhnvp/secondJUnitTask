@@ -1,4 +1,4 @@
-package ru.stepup;
+package ru.stepup.student;
 
 import lombok.*;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -7,6 +7,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import ru.stepup.student.interfaces.GradeCheck;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,11 @@ public class Student {
     @Getter    @Setter
     private String name;
     private List<Integer> grades = new ArrayList<>();
+    private GradeCheck gc;
 
-    public Student(String name) {
+    public Student(String name, GradeCheck gc) {
         this.name = name;
+        this.gc = gc;
     }
 
     public List<Integer> getGrades() {
@@ -28,12 +31,8 @@ public class Student {
     }
 
     @SneakyThrows
-    public void addGrade(int grade) {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet request = new HttpGet("http://localhost:5352/checkGrade?grade="+grade);
-        CloseableHttpResponse httpResponse = httpClient.execute(request);
-        HttpEntity entity = httpResponse.getEntity();
-        if(!Boolean.parseBoolean(EntityUtils.toString(entity))){
+    public void addGrade(int grade) {//переписал метод чтобы удобнее было работать с заглушками, прям TDD какой то
+        if(!gc.check(grade)){
             throw new IllegalArgumentException(grade + " is wrong grade");
         }
         grades.add(grade);
