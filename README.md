@@ -1,1 +1,1 @@
-JUnit + HTTP заглушка
+JUnit + Mockito
